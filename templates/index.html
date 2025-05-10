@@ -2,21 +2,136 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Breast Cancer Predictor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .container {
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        h1 {
+            color: #e91e63;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .prediction-result {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        .benign {
+            background-color: #c8e6c9;
+            color: #1b5e20;
+        }
+        .malignant {
+            background-color: #ffcdd2;
+            color: #b71c1c;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #e91e63;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            display: block;
+            margin: 20px auto;
+            width: 200px;
+        }
+        button:hover {
+            background-color: #c2185b;
+        }
+        .error {
+            color: #d32f2f;
+            text-align: center;
+            margin: 10px 0;
+        }
+        .description {
+            text-align: center;
+            margin-bottom: 20px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .feature-description {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 3px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Breast Cancer Prediction</h1>
-    <form method="POST">
-        {% for feature in features %}
-            {% if feature != 'target' and feature != 'cluster' %}
-                <label>{{ feature }}</label><br>
-                <input type="text" name="{{ feature }}" required><br><br>
-            {% endif %}
-        {% endfor %}
-        <button type="submit">Predict</button>
-    </form>
-    {% if result %}
-        <h2>Prediction: {{ result }}</h2>
-    {% endif %}
+    <div class="container">
+        <h1>Breast Cancer Prediction Tool</h1>
+
+        <div class="description">
+            <p>Enter the cell nuclei measurements below to predict whether a breast mass is benign or malignant.
+               All features are computed from a digitized image of a fine needle aspirate (FNA) of a breast mass.</p>
+        </div>
+
+        {% if prediction %}
+        <div class="prediction-result {% if 'Benign' in prediction %}benign{% else %}malignant{% endif %}">
+            Prediction: {{ prediction }} with confidence {{ probability }}
+        </div>
+        {% endif %}
+
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+
+        <form action="/predict" method="POST">
+            <div class="form-grid">
+                {% for feature in features %}
+                <div class="form-group">
+                    <label for="{{ feature }}">{{ feature }}</label>
+                    <input type="number" id="{{ feature }}" name="{{ feature }}" step="0.0001" required
+                           value="{{ input_values[feature] if input_values is defined and feature in input_values else '' }}">
+                    <div class="feature-description">
+                        {% if 'mean' in feature %}Mean value of the feature
+                        {% elif 'se' in feature %}Standard error of the feature
+                        {% elif 'worst' in feature %}Worst (largest) value of the feature
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <button type="submit">Predict</button>
+        </form>
+    </div>
 </body>
 </html>
