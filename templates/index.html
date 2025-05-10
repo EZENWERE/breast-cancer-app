@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Breast Cancer Predictor</title>
+</head>
+<body>
+    <h1>Breast Cancer Prediction</h1>
+    <form method="POST">
+        {% for feature in features %}
+            {% if feature != 'target' and feature != 'cluster' %}
+                <label>{{ feature }}</label><br>
+                <input type="text" name="{{ feature }}" required><br><br>
+            {% endif %}
+        {% endfor %}
+        <button type="submit">Predict</button>
+    </form>
+    {% if result %}
+        <h2>Prediction: {{ result }}</h2>
+    {% endif %}
+</body>
+</html>
