@@ -70,7 +70,7 @@ def predict():
         probability = model.predict_proba([input_data])[0][1]
 
         # Format results
-        result = "Benign (Non-cancerous)" if prediction == 1 else "Malignant (Cancerous)"
+        result = "Benign '1' (Non-cancerous)" if prediction == 1 else "Malignant '0' (Cancerous)"
         prob_percentage = f"{probability * 100:.2f}%" if prediction == 1 else f"{(1 - probability) * 100:.2f}%"
 
         return render_template("index.html",
